@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="zh" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法 | kiki的个人博客</title><meta name="keywords" content="脉冲神经网络,Dspike"><meta name="author" content="kiki"><meta name="copyright" content="kiki"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="referrer" content="no-referrer"><meta name="description" content="Differentiable Spike: Rethinking Gradient-Descent for Training Spiking Neural Networks（可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法） 一、研究背景 ​	脉冲神经网络（SNN）是一种新型的神经网络模型，具有低功耗、高效率和生物可解释性等优点。然而，由于SNN的离散性质，传统的梯度下降方法无法直接应用于SN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法">
+<meta property="og:url" content="http://example.com/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/index.html">
+<meta property="og:site_name" content="kiki的个人博客">
+<meta property="og:description" content="Differentiable Spike: Rethinking Gradient-Descent for Training Spiking Neural Networks（可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法） 一、研究背景 ​	脉冲神经网络（SNN）是一种新型的神经网络模型，具有低功耗、高效率和生物可解释性等优点。然而，由于SNN的离散性质，传统的梯度下降方法无法直接应用于SN">
+<meta property="og:locale">
+<meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg">
+<meta property="article:published_time" content="2023-09-02T10:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-02T10:00:00.000Z">
+<meta property="article:author" content="kiki">
+<meta property="article:tag" content="论文阅读笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><link rel="shortcut icon" href="/img/%E9%A3%8E%E6%99%AF.png"><link rel="canonical" href="http://example.com/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/amekaki" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-02 18:00:00'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/background.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avator.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">12</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">kiki的个人博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-09-02T10:00:00.000Z" title="Created 2023-09-02 18:00:00">2023-09-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-09-02T10:00:00.000Z" title="Updated 2023-09-02 18:00:00">2023-09-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">阅读笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div><article class="post-content" id="article-container"><h1>Differentiable Spike: Rethinking Gradient-Descent for Training Spiking Neural Networks（可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法）</h1>
+<h4 id="一、研究背景">一、研究背景</h4>
+<p>​	脉冲神经网络（SNN）是一种新型的神经网络模型，具有低功耗、高效率和生物可解释性等优点。然而，由于SNN的离散性质，传统的梯度下降方法无法直接应用于SNN的训练中，这限制了SNN的应用范围和性能。因此，如何有效地直接训练SNN成为了一个重要的研究方向。为了解决这个问题，作者提出了一种新的方法——使用可捕捉有限梯度差分方向的Differentiable Spike（Dspike）函数来代替梯度，以便在训练过程中进行自适应梯度估计，这种方法可以有效地训练大规模的SNN模型，并提高其性能。</p>
+<h4 id="二、研究内容和主要创新点">二、研究内容和主要创新点</h4>
+<p><strong>研究内容：</strong></p>
+<p>​	作者首先介绍了SNN基本原理和点火函数不可微导致传统梯度下降法不可用的原因，引出FDG有限差分梯度法。紧接着作者介绍了FDG的局限性，在此基础上，作者提出了一种可以自适应改变其形状并捕捉有限差分梯度方向的可微尖峰函数(Dspike)，并提出的相应的算法流程和数学模型。算法的整体工作流程如图1所示。实验表明，作者提出的模型是非常准确高效的，在CIFAR-DVS数据集上上可以达到75.4%的top-1准确率，并且仅消耗了CIFAR-10上相应ANN的7.8%能量。</p>
+<img src="https://gitee.com/kik-77/imagebed/raw/master/img/image-20230830104913061.png" alt="image-20230830104913061" style="zoom:50%;">
+<center><p>图1：基于Dsprike的可微脉冲神经网络算法流程图</p></center>
+<p><strong>主要创新点:</strong></p>
+<p>•作者从数学上推导出SNN中使用梯度下降算法的具有局限性的原因，并提出用有限差分梯度FDG代替导数的方法</p>
+<p>•作者提出一种参数可调的双曲正切函数构成的新型Dspike函数来代替梯度进行自适应梯度估计的方法，从而适应不同的数据集和任务</p>
+<h4 id="三、梯度下降法的重思考">三、梯度下降法的重思考</h4>
+<p>​	脉冲神经网络(SNN)中最常用的神经元模型为 LIF神经元模型。在LIF模型中，给定膜电位u(t)，设Vth为放电阈值，当膜电位超过阈值时，膜电位会产生一个尖峰，然后硬复位为0，表示为：</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830200242810.png" alt="image-20230830200242810" style="zoom:50%;">
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830200501279.png" alt="image-20230830200501279" style="zoom:50%;">
+<p>​	由上面的式子可知，y函数可以看做是关于u的符号函数的变体，y对u的导数导数为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>δ</mi></mrow><annotation encoding="application/x-tex">\delta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.03785em;">δ</span></span></span></span>函数，在阈值处为无穷，其余函数值为无穷，设L为任务损失目标，使用时空反向传播(STBP)计算权重参数的梯度:</p>
+<img src="https://gitee.com/kik-77/imagebed/raw/master/img/image-20230830152635244.png" alt="image-20230830152635244" style="zoom: 50%;">
+<p>​		式中的输出y对u的导数项在y阶跃点处为无穷大，其余点导数为0，因此，如果采用梯度下降法对权重W进行更新，要么权值不改变，要么权值变为无穷大，这显然是不合理的。</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830201627609.png" alt="image-20230830201627609" style="zoom:50%;">
+<p>​	分析产生上述问题的原因，梯度下降法是将损失函数值用其一阶泰勒展开近似，如上式所示，而一阶泰勒近似仅在W变化量趋于0时成立，因此梯度函数只考虑在一个无限小的邻域周围的损失变化率，但在SNN网络中，在领域趋于0的范围内近似的梯度始终为0，但对于一个很小的邻域，损失函数会发生变化，导致梯度不为零。</p>
+<h4 id="四、方法介绍">四、方法介绍</h4>
+<p><strong>有限差分梯度（FDG）</strong></p>
+<p>为了解决SNN中梯度下降法不可用的问题，作者首先提出了有限差分梯度（FDG）代替梯度的方法。在SNN网络中，在领域趋于0的范围内近似的梯度始终为0，但对于一个很小的邻域，损失函数会发生变化，导致梯度不为零。因此在有限小的区域内，用有限差分梯度（FDG）来估计梯度。表示为：</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830202643146.png" alt="image-20230830202643146" style="zoom:50%;">
+<p>为了验证FDG方法的可行性，作者通过两个实验验证了有限差分梯度FDG的有效性：</p>
+<p>实验一：在人工神经网络（ANN）上验证FDG的有效性。作者在MNIST数据集上训练了一个ANN，并比较了真实梯度和FDG之间的差异。作者使用余弦相似度来确定这两个梯度向量之间的角度，实验结果如图2（a）所示，结果表明：在不同的ε值下，FDG和真实梯度的方向始终非常相似（余弦相似度&gt;0.99），说明FDG是一个有效的量，可以在ANN优化中代替梯度，找到较为精确的梯度下降步长。</p>
+<p>实验二：在脉冲神经网络（SNN）上验证FDG的有效性。作者在N-MNIST数据集上训练了一个SNN，并比较了SNN中的代理梯度和FDG之间的余弦相似度，实验结果如图2（b）所示，结果表明：在不同的ε值下，FDG和代理梯度的方向始终非常相似（余弦相似度&gt;0.99），说明FDG也可以在SNN优化中有效的估计梯度下降步长。 通过这两个实验，作者证明了FDG是一个有效的梯度估计方法。但是在训练过程评估权重向量中每个元素的FDG计算量极大，这大大减慢了训练过程。</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230901182253164.png" alt="image-20230901182253164" style="zoom:50%;">
+<center><p>图2：ANN网络和SNN网络中梯度和FDG的余弦相似度</p></center>
+<p><strong>Dspike函数：</strong></p>
+<p>​	为了解决FDG训练开销大的问题，作者接着提出一种可以在相对较大的邻域内模拟FDG的梯度估计函数-Dspike函数。选择双曲正切函数tanh(x) 作为梯度估计的基本构造函数，构造出Dspike函数:</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830203003352.png" alt="image-20230830203003352" style="zoom:50%;">
+<p>tanh函数是一种常用的激活函数，具有良好的数学性质和广泛的应用。作者认为，tanh函数可以作为梯度估计的基本构建函数，因为它具有可微性和连续性，可以方便地进行梯度计算和反向传播。并且Dspike函数是一种灵活的函数，可以通过改变参数a、b、c、d控制其形状，从而捕捉有限差分梯度的方向。</p>
+<p>参数c控制函数的对称中心，首先使用c = Vth = 0.5将对称中心设置为(0.5,0.5)。然后可以通过Dspike(0) = 0, Dspike(1) = 1来确定参数a和d，函数可以被重写为:</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830203133271.png" alt="image-20230830203133271" style="zoom:50%;">
+<p>从式子12可以看出，通过调整温度b的值可以调整Dspike函数的值，参数b(b &gt; 0)称为温度因子，它控制Dspike函数的形状。具体来说，当b趋近于0时，Dspike函数的形状趋近于线性，而当b趋近于正无穷时，Dspike函数的形状趋近于阶跃函数。作者还通过引入引理来证明了这一点。这种自适应的Dspike函数可以帮助SNN模型更好地适应不同的数据集和任务，从而提高其性能。</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830203401021.png" alt="image-20230830203401021" style="zoom:50%;">
+<center><p>图3：前向和后向Dspike函数形状随温度b的变化</p></center>
+<p>​	通过调整温度值b，可以找到最佳的替代梯度。为了找到最优的温度值，作者使用了一种基于网格搜索的方法，即在一定范围内对ε进行离散化，然后在静态数据集上进行实验，比较不同ε值下的性能表现。通过Dspike代理梯度训练SNN的算法伪代码Algorithm1所示。结果表明，较大的ε值可以提高模型的性能，但过大的ε值会导致模型过拟合。实验得到的最优温度ε为0.1，这是一个较好的折衷方案，可以在不同的数据集和网络结构上获得较好的性能。</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230830203452758.png" alt="image-20230830203452758" style="zoom: 33%;">
+<h4 id="五、实验设置和结果">五、实验设置和结果</h4>
+<p><strong>实验设置：</strong></p>
+<p>作者在静态数据集和事件流数据集（N-MNIST和DVS-CIFAR10）上进行了实验。</p>
+<p>在静态数据集（MNIST、CIFAR-10和CIFAR-100）上，采用resnet家族架构，使用了一个带有3个茎层和avg-downsample的修改版本resnet作为网络架构，并且采用常规的训练和测试方法，包括使用交叉熵损失函数和Adam优化器进行训练，使用准确率和损失函数值作为性能指标进行评估。</p>
+<p>在事件流数据集上，作者使用了基于事件的方法进行训练和测试，包括使用SpikeProp算法进行训练，使用平均分类准确率和平均事件数作为性能指标进行评估。</p>
+<p><strong>实验结果：</strong></p>
+<img src="https://gitee.com/kik-77/imagebed/raw/master/img/image-20230901183210673.png" alt="image-20230901183210673" style="zoom: 50%;">
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230901184937409.png" alt="image-20230901184937409" style="zoom:50%;">
+<p>​	该方法在CIFAR和ImageNet上的实验结果如表2和表4所示，可以看出，使用Dspike函数进行训练的SNN模型在静态数据集上的性能表现优于其他方法，包括使用传统的代理梯度方法和直接训练SNN方法。在数据流数据集上，作者的方法也取得了较好的性能，证明了其在事件驱动场景下的可行性。</p>
+<p>​	此外，作者对采用Dspike函数的SNN的稀疏性和高效计算以及能量消耗进行评估，作者通过实验测量了每个LIF层的激活稀疏性，并将结果绘制成图表，结果如图4所示，每个LIF层的稀疏率不超过32%，即更多的神经元处于非激活状态，这可以减少计算量和能量消耗。此外，作者还比较了ANN和SNN的计算操作次数和能量消耗，结果如表3所示，结果表明在相同的模型和数据集上，使用Dspike训练的SNN具有更少的计算操作次数和更低的能量消耗，这是由于SNN的事件驱动操作和二进制激活可以实现无乘法的推理，使用Dspike训练的SNN具有更低的能量消耗，这可以降低硬件实现的成本和功耗。</p>
+<img src="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/Users\yukik\AppData\Roaming\Typora\typora-user-images\image-20230901185504511.png" alt="image-20230901185504511" style="zoom:50%;">
+<h4 id="六、总结">六、总结</h4>
+<p>​	这篇文章介绍了一种新的，可以自适应改变其形状并捕捉有限差分梯度方向的可微尖峰函数(Dspike)，称为Differentiable Spike（Dspike）。作者从理论上分析了有限差分梯度（FDG）和Dspike来估计梯度，从而对SNN直接训练的可行性，并在MNIST和N-MNIST数据集上进行了实验，并与其他SNN训练方法进行了比较。实验结果表明，使用Dspike训练的SNN具有更高的稀疏性、更高的计算效率和更低的能量消耗，同时也具有更好的分类性能。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">kiki</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/">http://example.com/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">论文阅读笔记</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/08/25/matplotlib%E6%97%A0%E6%B3%95%E8%BE%93%E5%87%BA%E4%B8%AD%E6%96%87/"><img class="next-cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">matplotlib无法输出中文</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kiki</div><div class="author-info__description">keep moving, keep recording~</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">12</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/amekaki" target="_blank" title="Github"><i class="fab fa-github"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">Differentiable Spike: Rethinking Gradient-Descent for Training Spiking Neural Networks（可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="toc-number">1.0.0.1.</span> <span class="toc-text">一、研究背景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%A0%94%E7%A9%B6%E5%86%85%E5%AE%B9%E5%92%8C%E4%B8%BB%E8%A6%81%E5%88%9B%E6%96%B0%E7%82%B9"><span class="toc-number">1.0.0.2.</span> <span class="toc-text">二、研究内容和主要创新点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95%E7%9A%84%E9%87%8D%E6%80%9D%E8%80%83"><span class="toc-number">1.0.0.3.</span> <span class="toc-text">三、梯度下降法的重思考</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.0.0.4.</span> <span class="toc-text">四、方法介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE%E5%92%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">1.0.0.5.</span> <span class="toc-text">五、实验设置和结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">1.0.0.6.</span> <span class="toc-text">六、总结</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/" title="阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法"/></a><div class="content"><a class="title" href="/2023/09/02/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A1DifferentiableSpike_RethinkingGradient-Descent/" title="阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法">阅读笔记：可微脉冲神经元-重新思考训练脉冲神经网络的梯度下降法</a><time datetime="2023-09-02T10:00:00.000Z" title="Created 2023-09-02 18:00:00">2023-09-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/08/25/matplotlib%E6%97%A0%E6%B3%95%E8%BE%93%E5%87%BA%E4%B8%AD%E6%96%87/" title="matplotlib无法输出中文"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="matplotlib无法输出中文"/></a><div class="content"><a class="title" href="/2023/08/25/matplotlib%E6%97%A0%E6%B3%95%E8%BE%93%E5%87%BA%E4%B8%AD%E6%96%87/" title="matplotlib无法输出中文">matplotlib无法输出中文</a><time datetime="2023-08-25T10:00:00.000Z" title="Created 2023-08-25 18:00:00">2023-08-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/08/23/vscode%E8%BE%93%E5%87%BA%E4%B9%B1%E7%A0%81/" title="vscode输出乱码"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="vscode输出乱码"/></a><div class="content"><a class="title" href="/2023/08/23/vscode%E8%BE%93%E5%87%BA%E4%B9%B1%E7%A0%81/" title="vscode输出乱码">vscode输出乱码</a><time datetime="2023-08-23T10:00:00.000Z" title="Created 2023-08-23 18:00:00">2023-08-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/08/21/9%202023-8-18ubuntu20%E6%9B%B4%E6%8D%A2%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E5%86%85%E6%A0%B8/" title="ubuntu20.04更改系统启动内核"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ubuntu20.04更改系统启动内核"/></a><div class="content"><a class="title" href="/2023/08/21/9%202023-8-18ubuntu20%E6%9B%B4%E6%8D%A2%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E5%86%85%E6%A0%B8/" title="ubuntu20.04更改系统启动内核">ubuntu20.04更改系统启动内核</a><time datetime="2023-08-21T10:00:00.000Z" title="Created 2023-08-21 18:00:00">2023-08-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/08/21/8%202023-8-17%E8%AE%B0%E5%BD%95%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F%E5%90%8E%E9%87%8D%E6%96%B0%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%B8%83%E4%B8%83%E5%85%AB%E5%85%AB%E7%9A%84bugs/" title="记录重装系统后重新配置博客的一些七七八八的bugs"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="记录重装系统后重新配置博客的一些七七八八的bugs"/></a><div class="content"><a class="title" href="/2023/08/21/8%202023-8-17%E8%AE%B0%E5%BD%95%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F%E5%90%8E%E9%87%8D%E6%96%B0%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%B8%83%E4%B8%83%E5%85%AB%E5%85%AB%E7%9A%84bugs/" title="记录重装系统后重新配置博客的一些七七八八的bugs">记录重装系统后重新配置博客的一些七七八八的bugs</a><time datetime="2023-08-21T07:00:00.000Z" title="Created 2023-08-21 15:00:00">2023-08-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By kiki</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
